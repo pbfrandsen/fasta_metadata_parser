@@ -1,4 +1,5 @@
 import sys
+import numpy
 # from xml.dom.minidom import getDOMImplementation
 import skbio
 from skbio.sequence import Sequence
@@ -30,22 +31,47 @@ def get_stats(genome):
     gc_cont = (gc/total_bps) * 100
     # Create a sorted list of the individual contig sizes
     seq_lens = sorted(seq_lens, reverse = True)
+    # print("these are your seq lens " + str(seq_lens))
     counter = 0
     half_bps = 0
+    # Initialize a dictionary to store the stats
+    stats_dict = {}
     # Look for the contig n50 (the contig length for which half of the total
     # bases are in a contig at equal to or greater than the current contig)
     while half_bps <= (total_bps / 2):
+        # if half_bps <= (total_bps * 0.1) and "n90" not in stats_dict:
+        if half_bps <= (total_bps * 0.1):
+            stats_dict["n90"] = seq_lens[counter]
+            stats_dict["l90"] = counter
+        # if half_bps <= (total_bps * 0.2) and "n80" not in stats_dict:
+        if half_bps <= (total_bps * 0.2):
+            stats_dict["n80"] = seq_lens[counter]
+            stats_dict["l80"] = counter
+        # if half_bps <= (total_bps * 0.3) and "n70" not in stats_dict:
+        if half_bps <= (total_bps * 0.3):
+            stats_dict["n70"] = seq_lens[counter]
+            stats_dict["l70"] = counter
+        # if half_bps <= (total_bps * 0.4) and "n60" not in stats_dict:
+        if half_bps <= (total_bps * 0.4):
+            stats_dict["n60"] = seq_lens[counter]
+            stats_dict["l60"] = counter
         half_bps += seq_lens[counter]
         counter += 1
 
-    n50 = seq_lens[counter - 1]
-    length = sum(seq_lens[0:counter])
-    print "Here are the contigs before the contig n50: " + str(seq_lens[0:(counter + 1)])
+    stats_dict["n50"] = seq_lens[counter - 1]
+    stats_dict["l50"] = counter - 1
+    stats_dict["median_contig"] = numpy.median(seq_lens)
+    stats_dict["mean_contig"] = numpy.mean(seq_lens)
+    stats_dict["total_bps"] = total_bps
+    stats_dict["gc_cont"] = gc_cont
+    stats_dict["num_contigs"] = len(seq_lens)
+    # print "Here are the contigs before the contig n50: " + str(seq_lens[0:(counter + 1)])
+    # length = sum(seq_lens[0:counter])
     # print "There are " + str(len(seq_lens)) + " contigs!"
     # print "we are looking at contig number " + str(counter-1) + "!"
     # print "The length of the contigs before this one is: " + str(length)
     # Return the total number of base pairs and the contig n50 in a tuple
-    return total_bps, n50, gc_cont
+    return stats_dict
 
 def write_stats_to_xml(outfilename, stats_list):
     # this_xml = getDOMImplementation()
@@ -75,13 +101,22 @@ def write_stats_to_xml(outfilename, stats_list):
 
 if __name__ == "__main__":
     infilename = sys.argv[1]
-    outfile_xml = sys.argv[2]
+    # outfile_xml = sys.argv[2]
     genome = read_genome(infilename)
-    # Grab the stats in this order: total_bps, n50, & gc_content
-    stats_list = get_stats(genome)
-    write_stats_to_xml(outfile_xml, stats_list)
-    print "The total number of base pairs is: " + str(stats_list[0])
-    print "Your contig N50 is: " + str(stats_list[1])
-    print "Your GC content is: " + str(float("{0:.2f}".format(stats_list[2]))) + "%"
+    # Grab the stats dictionary
+    stats_dict = get_stats(genome)
+    # write_stats_to_xml(outfile_xml, stats_list)
+    print "Total number of base pairs: " + str(stats_dict["total_bps"])
+    print "Total number of contigs: " + str(stats_dict["num_contigs"])
+    these_stats = ["90", "80", "70", "60", "50"]
+    for i in these_stats:
+        this_stat = "n" + i
+        print("N" + i + ": " + str(stats_dict[this_stat]))
+    for i in these_stats:
+        this_stat = "l" + i
+        print("L" + i + ": " + str(stats_dict[this_stat]))
+    print "GC content: " + str(float("{0:.2f}".format(stats_dict["gc_cont"]))) + "%"
+    print "Median contig size: " + str(stats_dict["median_contig"])
+    print "Mean contig size: " + str(float("{0:.2f}".format(stats_dict["mean_contig"])))
 
 

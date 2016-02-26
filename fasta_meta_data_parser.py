@@ -36,30 +36,26 @@ def get_stats(genome):
     half_bps = 0
     # Initialize a dictionary to store the stats
     stats_dict = {}
-    # Look for the contig n50 (the contig length for which half of the total
+    # Look for the contig n* (the contig length for which *% of the total
     # bases are in a contig at equal to or greater than the current contig)
     while half_bps <= (total_bps / 2):
-        # if half_bps <= (total_bps * 0.1) and "n90" not in stats_dict:
         if half_bps <= (total_bps * 0.1):
             stats_dict["n90"] = seq_lens[counter]
             stats_dict["l90"] = counter
-        # if half_bps <= (total_bps * 0.2) and "n80" not in stats_dict:
         if half_bps <= (total_bps * 0.2):
             stats_dict["n80"] = seq_lens[counter]
             stats_dict["l80"] = counter
-        # if half_bps <= (total_bps * 0.3) and "n70" not in stats_dict:
         if half_bps <= (total_bps * 0.3):
             stats_dict["n70"] = seq_lens[counter]
             stats_dict["l70"] = counter
-        # if half_bps <= (total_bps * 0.4) and "n60" not in stats_dict:
         if half_bps <= (total_bps * 0.4):
             stats_dict["n60"] = seq_lens[counter]
             stats_dict["l60"] = counter
+        stats_dict["n50"] = seq_lens[counter]
+        stats_dict["l50"] = counter
         half_bps += seq_lens[counter]
         counter += 1
 
-    stats_dict["n50"] = seq_lens[counter - 1]
-    stats_dict["l50"] = counter - 1
     stats_dict["median_contig"] = numpy.median(seq_lens)
     stats_dict["mean_contig"] = numpy.mean(seq_lens)
     stats_dict["total_bps"] = total_bps

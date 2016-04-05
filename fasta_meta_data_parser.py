@@ -69,6 +69,8 @@ class ContigStats(object):
         stats_dict["total_bps"] = total_bps
         stats_dict["gc_cont"] = self.gc_cont
         stats_dict["num_contigs"] = len(seq_lens)
+        stats_dict["largest_contig"] = seq_lens[0]
+        stats_dict["shortest_contig"] = seq_lens[-1]
         self.stats_dict = stats_dict
     # Write some of the stats to xml for ingestion into SIdora (work in
     # progress)
@@ -110,6 +112,8 @@ class ContigStats(object):
         print("GC content: " + str(float("{0:.2f}".format(stats_dict["gc_cont"]))) + "%")
         print("Median contig size: " + str(stats_dict["median_contig"]))
         print("Mean contig size: " + str(float("{0:.2f}".format(stats_dict["mean_contig"]))))
+        print("Longest contig is: " + str(float("{0:.2f}".format(stats_dict["largest_contig"]))))
+        print("Shortest contig is: " + str(float("{0:.2f}".format(stats_dict["shortest_contig"]))))
 
     def write_stats(self, filename):
         stats_dict = self.stats_dict
@@ -131,6 +135,10 @@ class ContigStats(object):
           + "\n")
         outfile.write("Mean contig size: " +
           str(float("{0:.2f}".format(stats_dict["mean_contig"]))) + "\n")
+        outfile.write("Longest contig is: " +
+          str(float("{0:.2f}".format(stats_dict["largest_contig"]))) + "\n")
+        outfile.write("Shortest contig is: " +
+          str(float("{0:.2f}".format(stats_dict["shortest_contig"]))) + "\n")
 
     def create_histogram(self, num_bins=50):
         # This is a histogram in bokeh, for some reason, I can't sort out the

@@ -1,8 +1,11 @@
 import sys
-import numpy
+import math
+import numpy as np
+import pylab as pl
 # from xml.dom.minidom import getDOMImplementation
 import skbio
 from skbio.sequence import Sequence
+from bokeh.plotting import figure, show, output_file, vplot
 
 class ContigStats(object):
 
@@ -12,8 +15,7 @@ class ContigStats(object):
     def change_seq_lens(self, seq_lens):
         self.seq_lens = seq_lens
 
-    # Generates the total number of base pairs and esimates the contig n50 for a
-    # genome
+    # Generates the total number of base pairs and the lengths of each contig
     def get_lens(self):
         total_bps = 0
         cs = 0
@@ -34,6 +36,7 @@ class ContigStats(object):
         self.seq_lens = sorted(seq_lens, reverse = True)
         # print("these are your seq lens " + str(seq_lens))
 
+    # Calculate N and L statistics and mean/median contig length
     def get_stats(self):
         total_bps = self.total_bps
         seq_lens = self.seq_lens
@@ -61,13 +64,14 @@ class ContigStats(object):
             half_bps += seq_lens[counter]
             counter += 1
 
-        stats_dict["median_contig"] = numpy.median(seq_lens)
-        stats_dict["mean_contig"] = numpy.mean(seq_lens)
+        stats_dict["median_contig"] = np.median(seq_lens)
+        stats_dict["mean_contig"] = np.mean(seq_lens)
         stats_dict["total_bps"] = total_bps
         stats_dict["gc_cont"] = self.gc_cont
         stats_dict["num_contigs"] = len(seq_lens)
         self.stats_dict = stats_dict
-
+    # Write some of the stats to xml for ingestion into SIdora (work in
+    # progress)
     def write_stats_to_xml(outfilename, stats_list):
         # this_xml = getDOMImplementation()
         # stats_doc = this_xml.createDocument(None, "genome_stats", None)
@@ -91,7 +95,7 @@ class ContigStats(object):
                       "  </stat>\n"+\
                       "</genome_stats>")
         outfile.close()
-
+    # Print the stats to the screen
     def print_stats(self):
         stats_dict = self.stats_dict
         print("Total number of base pairs: " + str(stats_dict["total_bps"]))
@@ -107,7 +111,47 @@ class ContigStats(object):
         print("Median contig size: " + str(stats_dict["median_contig"]))
         print("Mean contig size: " + str(float("{0:.2f}".format(stats_dict["mean_contig"]))))
 
-    # def creat_histogram(self):
+    def write_stats(self, filename):
+        stats_dict = self.stats_dict
+        outfile = open(filename, "w")
+        outfile.write("Total number of base pairs: " +
+          str(stats_dict["total_bps"]) + "\n")
+        outfile.write("Total number of contigs: " +
+          str(stats_dict["num_contigs"]) + "\n")
+        these_stats = ["90", "80", "70", "60", "50"]
+        for i in these_stats:
+            this_stat = "n" + i
+            outfile.write("N" + i + ": " + str(stats_dict[this_stat]) + "\n")
+        for i in these_stats:
+            this_stat = "l" + i
+            outfile.write("L" + i + ": " + str(stats_dict[this_stat]) + "\n")
+        outfile.write("GC content: " +
+          str(float("{0:.2f}".format(stats_dict["gc_cont"]))) + "%" + "\n")
+        outfile.write("Median contig size: " + str(stats_dict["median_contig"])
+          + "\n")
+        outfile.write("Mean contig size: " +
+          str(float("{0:.2f}".format(stats_dict["mean_contig"]))) + "\n")
+
+    def create_histogram(self, num_bins=50):
+        # This is a histogram in bokeh, for some reason, I can't sort out the
+        # log scale, so I'm working on it
+
+        # output_file("hist.html")
+        # h1 = figure(title="Contig Length Histogram", tools="save",
+        #   y_axis_type="log")
+        # hist, edges = np.histogram(self.seq_lens, density=True, bins=num_bins)
+        # # Take the log of the tops, if you wish...
+        # # other_hist = [math.log(x) for x in hist if x > 0]
+        # h1.quad(top=hist, bottom=0, left=edges[:-1], right=edges[1:],
+        #   fill_color="#036564", line_color="#033649")
+        # show(vplot(h1))
+
+        # Simple pyplot histogram with log yscale
+        pl.hist(self.seq_lens, bins=num_bins)
+        pl.gca().set_yscale("log")
+        pl.savefig("hist.png", bbox_inches="tight")
+        pl.show()
+
 
 
 # Reads a genome fasta file into a Sequence object
@@ -132,3 +176,5 @@ if __name__ == "__main__":
     stats.get_stats()
     # Print out the stats
     stats.print_stats()
+    stats.write_stats("genome_stats.txt")
+    stats.create_histogram()

@@ -184,5 +184,5 @@ if __name__ == "__main__":
     stats.get_stats()
     # Print out the stats
     stats.print_stats()
-    stats.write_stats("genome_stats.txt")
-    stats.create_histogram()
+    # stats.write_stats("genome_stats.txt")
+    # stats.create_histogram()

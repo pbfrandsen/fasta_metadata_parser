@@ -49,17 +49,17 @@ class ContigStats(object):
         # bases are in a contig at equal to or greater than the current contig)
         while half_bps <= (total_bps / 2):
             if half_bps <= (total_bps * 0.1):
-                stats_dict["n90"] = seq_lens[counter]
-                stats_dict["l90"] = counter
+                stats_dict["n10"] = seq_lens[counter]
+                stats_dict["l10"] = counter
             if half_bps <= (total_bps * 0.2):
-                stats_dict["n80"] = seq_lens[counter]
-                stats_dict["l80"] = counter
+                stats_dict["n20"] = seq_lens[counter]
+                stats_dict["l20"] = counter
             if half_bps <= (total_bps * 0.3):
-                stats_dict["n70"] = seq_lens[counter]
-                stats_dict["l70"] = counter
+                stats_dict["n30"] = seq_lens[counter]
+                stats_dict["l30"] = counter
             if half_bps <= (total_bps * 0.4):
-                stats_dict["n60"] = seq_lens[counter]
-                stats_dict["l60"] = counter
+                stats_dict["n40"] = seq_lens[counter]
+                stats_dict["l40"] = counter
             stats_dict["n50"] = seq_lens[counter]
             stats_dict["l50"] = counter
             half_bps += seq_lens[counter]
@@ -103,7 +103,7 @@ class ContigStats(object):
         stats_dict = self.stats_dict
         print("Total number of base pairs: " + str(stats_dict["total_bps"]))
         print("Total number of contigs: " + str(stats_dict["num_contigs"]))
-        these_stats = ["90", "80", "70", "60", "50"]
+        these_stats = ["10", "20", "30", "40", "50"]
         for i in these_stats:
             this_stat = "n" + i
             print("N" + i + ": " + str(stats_dict[this_stat]))
@@ -123,7 +123,7 @@ class ContigStats(object):
           str(stats_dict["total_bps"]) + "\n")
         outfile.write("Total number of contigs: " +
           str(stats_dict["num_contigs"]) + "\n")
-        these_stats = ["90", "80", "70", "60", "50"]
+        these_stats = ["10", "20", "30", "40", "50"]
         for i in these_stats:
             this_stat = "n" + i
             outfile.write("N" + i + ": " + str(stats_dict[this_stat]) + "\n")

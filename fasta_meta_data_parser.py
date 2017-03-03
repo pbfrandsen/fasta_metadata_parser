@@ -75,28 +75,31 @@ class ContigStats(object):
         self.stats_dict = stats_dict
     # Write some of the stats to xml for ingestion into SIdora (work in
     # progress)
-    def write_stats_to_xml(outfilename, stats_list):
+    def write_stats_to_xml(self, outfilename):
         # this_xml = getDOMImplementation()
         # stats_doc = this_xml.createDocument(None, "genome_stats", None)
+        stats_dict = self.stats_dict
         outfile = open(outfilename, "w")
-        outfile.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"+\
-                      "<genome_stats>\n"+\
-                      "  <stat>\n"+\
-                      "    <name>Total base pairs</name>\n"+\
-                      "    <description>The number of base pairs in the assembled genome</description>\n"+\
-                      "    <value>"+str(self.stat_dict["total_bps"])+"</value>\n"+\
-                      "  </stat>\n"+\
-                      "  <stat>\n"+\
-                      "    <name>Contig n50</name>\n"+\
-                      "    <description>The contig N50 statistic of the assembled genome</description>\n"+\
-                      "    <value>"+str(self.stats_dict["n50"])+"</value>\n"+\
-                      "  </stat>\n"+\
-                      "  <stat>\n"+\
-                      "    <name>GC content</name>\n"+\
-                      "    <description>The percentage of GC in the assembled genome</description>\n"+\
-                      "    <value>"+str(self.stats_dict["gc_cont"])+"</value>\n"+\
-                      "  </stat>\n"+\
-                      "</genome_stats>")
+        outfile.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                      "<document>\n" +
+                      "    <TotalNumberOfBasePairs>"+str(stats_dict["total_bps"])+"</TotalNumberOfBasePairs>\n" +
+                      "    <TotalNumberOfContigs>"+str(stats_dict["num_contigs"])+"</TotalNumberOfContigs>\n" +
+                      "    <N10>"+str(stats_dict["n10"])+"</N10>\n" +
+                      "    <N20>"+str(stats_dict["n20"])+"</N20>\n" +
+                      "    <N30>"+str(stats_dict["n30"])+"</N30>\n" +
+                      "    <N40>"+str(stats_dict["n40"])+"</N40>\n" +
+                      "    <N50>"+str(stats_dict["n50"])+"</N50>\n" +
+                      "    <L10>"+str(stats_dict["l10"])+"</L10>\n" +
+                      "    <L20>"+str(stats_dict["l20"])+"</L20>\n" +
+                      "    <L30>"+str(stats_dict["l30"])+"</L30>\n" +
+                      "    <L40>"+str(stats_dict["l40"])+"</L40>\n" +
+                      "    <L50>"+str(stats_dict["l50"])+"</L50>\n" +
+                      "    <GCcontent>"+str(float("{0:.2f}".format(stats_dict["gc_cont"]))) + "%"+"</GCcontent>\n" +
+                      "    <MedianContigSize>"+str(stats_dict["median_contig"])+"</MedianContigSize>\n" +
+                      "    <MeanContigSize>"+str(float("{0:.2f}".format(stats_dict["mean_contig"])))+"</MeanContigSize>\n" +
+                      "    <LongestContigIs>"+str(float("{0:.2f}".format(stats_dict["largest_contig"])))+"</LongestContigIs>\n" +
+                      "    <ShortestContigIs>"+str(float("{0:.2f}".format(stats_dict["shortest_contig"])))+"</ShortestContigIs>\n" +
+                      "</document>\n")
         outfile.close()
     # Print the stats to the screen
     def print_stats(self):
@@ -185,5 +188,6 @@ if __name__ == "__main__":
     stats.get_stats()
     # Print out the stats
     stats.print_stats()
+    stats.write_stats_to_xml("genome_stats.xml")
     # stats.write_stats("genome_stats.txt")
     # stats.create_histogram()

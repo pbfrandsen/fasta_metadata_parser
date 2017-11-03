@@ -16,17 +16,19 @@ class ContigStats(object):
     def change_seq_lens(self, seq_lens):
         self.seq_lens = seq_lens
 
-    # Generates the total number of base pairs and the lengths of each contig
-    def get_lens(self):
+    # Generates the total number of base pairs and the lengths of each scaffold
+    def get_scaf_lens(self):
         total_bps = 0
         cs = 0
         gs = 0
         seq_lens = []
-        # Find out how many total base pairs and make a list of the contig sizes
+        # Find out how many total base pairs and make a list of the scaffold 
+        # sizes
         for seq in self.genome:
+            seq = seq.lower()
             this_len = len(seq)
-            cs += seq.count("G")
-            gs += seq.count("C")
+            cs += seq.count("g")
+            gs += seq.count("c")
             total_bps += this_len
             seq_lens.append(this_len)
         # Calculate GC content
@@ -36,6 +38,37 @@ class ContigStats(object):
         # Create a sorted list of the individual contig sizes
         self.seq_lens = sorted(seq_lens, reverse = True)
         # print("these are your seq lens " + str(seq_lens))
+
+    def get_contig_lens(self):
+        total_bps = 0
+        cs = 0
+        gs = 0
+        seq_lens = []
+        # Find out how many total base pairs and make a list of the contig 
+        # sizes
+        for seq in self.genome:
+            seq = seq.lower()
+            if "n" in seq:
+                contig_list = seq.split("n")
+                for contig in contig_list:
+                    this_len = len(contig)
+                    cs += contig.count("g")
+                    gs += contig.count("c")
+                    total_bps += this_len
+                    seq_lens.append(this_len)
+            else:
+                this_len = len(seq)
+                cs += seq.count("g")
+                gs += seq.count("c")
+                total_bps += this_len
+                seq_lens.append(this_len)
+                
+        # Calculate GC content
+        gc = float(cs + gs)
+        self.total_bps = total_bps
+        self.gc_cont = (gc/total_bps) * 100
+        # Create a sorted list of the individual contig sizes
+        self.seq_lens = sorted(seq_lens, reverse = True)
 
     # Calculate N and L statistics and mean/median contig length
     def get_stats(self):

@@ -177,6 +177,7 @@ class FastaStats(object):
     # Print the stats to the screen
     def print_stats_contig(self):
         stats_dict = self.contig_stats_dict
+        print("Contig statistics:")
         print("Total number of base pairs: " + str(stats_dict["total_bps"]))
         print("Total number of contigs: " + str(stats_dict["num_contigs"]))
         these_stats = ["10", "20", "30", "40", "50"]
@@ -194,6 +195,7 @@ class FastaStats(object):
 
     def print_stats_scaf(self):
         stats_dict = self.scaf_stats_dict
+        print("\nScaffold statistics:")
         print("Total number of base pairs: " + str(stats_dict["total_bps"]))
         print("Total number of scaffolds: " + str(stats_dict["num_scaf"]))
         these_stats = ["10", "20", "30", "40", "50"]
